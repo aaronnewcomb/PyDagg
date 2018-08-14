@@ -14,6 +14,8 @@ running = True
 line_pos = 630
 text_line = {}
 n = 0
+heart_large = True
+heart_rate = 1000
 
 screen = pygame.display.set_mode((1024,768))
 pygame.display.set_caption("Dungeons Of Daggorath - Python Port")
@@ -26,12 +28,23 @@ cursor = pygame.Surface((26,4))
 cursor.fill(white)
 heart_lg = pygame.image.load('heart_lg.png')
 heart_sm = pygame.image.load('heart_sm.png')
+heart_sound1 = pygame.mixer.Sound('Sound/17_heart.wav')
+heart_sound2 = pygame.mixer.Sound('Sound/18_heart.wav')
+last_beat = pygame.time.get_ticks()
 
-def heart(rate):
-    gameDisplay.blit(heart_lg, (x,y))
-    pygame.display.update()
-    gameDisplay.blit(heart_lg, (x,y))
-    pygame.display.update()
+def heart():
+    global last_beat,heart_large
+    if pygame.time.get_ticks() > (last_beat + heart_rate):
+        last_beat = pygame.time.get_ticks()
+        if heart_large:
+            screen.blit(heart_lg, (496,608))
+            heart_large = False
+            pygame.mixer.Sound.play(heart_sound1)
+        else:
+            screen.fill(white, (496,608,32,32))
+            screen.blit(heart_sm, (496,608))
+            heart_large = True
+            pygame.mixer.Sound.play(heart_sound2)
 
 def update_lh(text):
     screen.blit(game_font.render(text, True, black), (0,596))
@@ -81,15 +94,16 @@ while running:
                 print(text)
                 text = '.'
             elif event.key == pygame.K_BACKSPACE:
-                # Remove the last character from the text string
-                text = text[:-1]
-                # Overwrite the cursor pixels with black
-                cursor.fill(black)
-                screen.blit(cursor, (cursor_x, cursor_y))
-                # Move the cursor starting position back one space
-                cursor_x = cursor_x - 32
-                # Overwrite the last character pixels with black
-                screen.fill(black, (cursor_x, line_pos + 10, 32, 32))
+                if not len(text) == 1:
+                    # Remove the last character from the text string
+                    text = text[:-1]
+                    # Overwrite the cursor pixels with black
+                    cursor.fill(black)
+                    screen.blit(cursor, (cursor_x, cursor_y))
+                    # Move the cursor starting position back one space
+                    cursor_x = cursor_x - 32
+                    # Overwrite the last character pixels with black
+                    screen.fill(black, (cursor_x, line_pos + 10, 32, 32))
             else:
                 cursor.fill(black)
                 screen.blit(cursor, (cursor_x, cursor_y))
@@ -100,6 +114,7 @@ while running:
     cursor.fill((255, 255, 255))
     screen.blit(cursor, (cursor_x, cursor_y))
     screen.blit(game_font.render(text, True, white), (0, line_pos))
+    heart()
 
     pygame.display.update()
     clock.tick(30)
