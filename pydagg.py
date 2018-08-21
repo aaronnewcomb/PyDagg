@@ -15,21 +15,21 @@ line_pos = 630
 text_line = {}
 n = 0
 heart_large = True
-heart_rate = 1000
+heart_rate = 800 #1000
 
 screen = pygame.display.set_mode((1024,768))
 pygame.display.set_caption("Dungeons Of Daggorath - Python Port")
 
 clock = pygame.time.Clock()
-
+pygame.mixer.init(frequency = 44100)
 pygame.draw.rect(screen, white, (0,608,1024,32))
 game_font = pygame.font.Font("TRS-80 Color Computer.ttf", 32)
 cursor = pygame.Surface((26,4))
 cursor.fill(white)
 heart_lg = pygame.image.load('heart_lg.png')
 heart_sm = pygame.image.load('heart_sm.png')
-heart_sound1 = pygame.mixer.Sound('Sound/17_heart.wav')
-heart_sound2 = pygame.mixer.Sound('Sound/18_heart.wav')
+heart_sound = pygame.mixer.Sound('Sound/20_heart.wav')
+#heart_sound2 = pygame.mixer.Sound('Sound/18_heart.wav')
 last_beat = pygame.time.get_ticks()
 
 def heart():
@@ -39,12 +39,14 @@ def heart():
         if heart_large:
             screen.blit(heart_lg, (496,608))
             heart_large = False
-            pygame.mixer.Sound.play(heart_sound1)
+            #heart_sound2.stop()
+            heart_sound.play()
         else:
             screen.fill(white, (496,608,32,32))
             screen.blit(heart_sm, (496,608))
             heart_large = True
-            pygame.mixer.Sound.play(heart_sound2)
+            #heart_sound1.stop()
+            #heart_sound2.play()
 
 def update_lh(text):
     screen.blit(game_font.render(text, True, black), (0,596))
